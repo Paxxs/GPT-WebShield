@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+  </head>
+  <body>
+    <button id="loadRepoInfo">Load GitHub Repo Info</button>
+    <div id="app">😀 GitHub repository information will appear here.</div>
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      const url = "https://api.github.com/repos/Paxxs/traefik-get-real-ip";
+      async function getGitHubRepoInfo() {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+
+          // 更新页面上的div元素以显示仓库信息
+          const appElement = document.getElementById("app");
+          const infoElement = document.createElement("div");
+          infoElement.innerHTML = `
+                    <h2>${data.full_name}</h2>
+                    <p>${data.description}</p>
+                    <p>🌟 Stars: ${data.stargazers_count}</p>
+                    <p>🍴 Forks: ${data.forks_count}</p>
+                    <a href="${data.html_url}" target="_blank">View on GitHub</a>
+                `;
+          appElement.appendChild(infoElement);
+        } catch (error) {
+          console.error(
+            "Fetching GitHub repository information failed:",
+            error
+          );
+          document.getElementById("app").innerText =
+            "Failed to load GitHub repository information.";
+        }
+      }
+
+      function getGitHubRepoInfoXHR() {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            // 请求完成
+            if (xhr.status === 200) {
+              // 请求成功
+              const resultJSON = JSON.parse(xhr.responseText);
+              console.log("Repository Information XHR:", resultJSON);
+              const appElement = document.getElementById("app");
+              const pElement = document.createElement("p");
+              pElement.style.overflowY = "auto";
+              pElement.style.height = "100px";
+              pElement.style.width = "50%";
+              pElement.innerText = xhr.responseText;
+              appElement.appendChild(pElement);
+            } else {
+              console.error("XHR Request failed:", xhr.statusText);
+            }
+          }
+        };
+        xhr.send();
+      }
+      // 绑定按钮的点击事件监听器
+      document.getElementById("loadRepoInfo").addEventListener("click", () => {
+        getGitHubRepoInfo();
+        getGitHubRepoInfoXHR();
+      });
+    </script>
+  </body>
+</html>
