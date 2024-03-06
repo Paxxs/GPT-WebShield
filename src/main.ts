@@ -1,5 +1,5 @@
 (() => {
-  const blockedDomain: string[] = ["closeai.biz"];
+  const blockedDomain: string[] = ["closeai."];
 
   // save original function?
   const originalFetch: typeof fetch = window.fetch;
@@ -7,7 +7,8 @@
 
   // 动态插入样式到 head
   const injectStyles = (): void => {
-    const css: string = `#toast-container{position:fixed;top:20px;right:20px;display:flex;flex-direction:column-reverse;gap:10px}.toast{background-color:rgba(0,0,0,.75);font-size:1rem;color:#fff;padding:5px;border-radius:5px;animation:4s forwards fadeOut}@keyframes fadeOut{from{opacity:1}to{opacity:0}}`;
+    const css: string =
+      "#toast-container{position:fixed;top:20px;right:20px;display:flex;flex-direction:column-reverse;gap:10px;z-index:50;}.toast{background-color:rgba(0,0,0,.75);font-size:1rem;color:#fff;padding:5px;border-radius:5px;animation:4s forwards fadeOut}@keyframes fadeOut{from{opacity:1}to{opacity:0}}";
     const style: HTMLStyleElement = document.createElement("style");
     style.textContent = css;
     document.head.appendChild(style);
@@ -24,10 +25,16 @@
   const container: HTMLDivElement = createToastContainer();
 
   // toast
-  const toast = (message: string): void => {
+  const toast = (
+    url: string,
+    method?: string,
+    guard: boolean = false
+  ): void => {
     const toast: HTMLDivElement = document.createElement("div");
     toast.className = "toast";
-    toast.textContent = message;
+    toast.textContent = (guard
+      ? "🪬隐私防护 "
+      : "🫥外部请求 ") + method + " " + url.replace(/^https?:\/\//, "");
     container.appendChild(toast);
 
     // 在动画完成后移除 toast
@@ -45,19 +52,17 @@
     url: string,
     type: "external" | "intercepted" | "normal" = "normal"
   ): void => {
-    if (type === "external")
-      toast(`🫥 外部${method}-${url.replace(/^https?:\/\//, "")}`);
-    else if (type === "intercepted")
-      toast(`🛡️ 隐私保护${method}-${url.replace(/^https?:\/\//, "")}`);
+    if (type === "external") toast(url, method);
+    else if (type === "intercepted") toast(url, method, true);
 
-    console.log(`${type} ${method} ${url}`);
+    console.log(type, method, url);
   };
 
   const fakeResponse = (body?: any): Response => {
     if (body) {
-      console.log(`SpyRBody:${body}`);
+      console.log("SpyRBody:", body);
     }
-    return new Response(JSON.stringify({ message: ":)" }), {
+    return new Response(JSON.stringify({ m: ":)" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -107,7 +112,7 @@
       if (isBlockedDomain(requestURL.hostname)) {
         logRequest(method, url, "intercepted");
         this.send = (data?: any): void => {
-          data && console.log(`SpyRBody:${data}`);
+          data && console.log("SpyXBody:", data);
         };
         return;
       }
