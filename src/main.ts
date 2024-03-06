@@ -32,9 +32,11 @@
   ): void => {
     const toast: HTMLDivElement = document.createElement("div");
     toast.className = "toast";
-    toast.textContent = (guard
-      ? "🪬隐私防护 "
-      : "🫥外部请求 ") + method + " " + url.replace(/^https?:\/\//, "");
+    toast.textContent =
+      (guard ? "🪬隐私防护 " : "🫥 ") +
+      (method || "") +
+      " " +
+      url.replace(/^https?:\/\//, "");
     container.appendChild(toast);
 
     // 在动画完成后移除 toast
@@ -127,6 +129,7 @@
   }
 
   window.XMLHttpRequest = XMLHttpRequestMock as any;
+  toast("隐私防御已启动");
 })();
 
 // (() => {
