@@ -2,16 +2,16 @@
   const f = ["closeai."], m = window.fetch, u = window.XMLHttpRequest, w = () => {
     const e = "#toast-container{position:fixed;top:20px;right:20px;display:flex;flex-direction:column-reverse;gap:10px;z-index:50;}.toast{background-color:rgba(0,0,0,.75);font-size:1rem;color:#fff;padding:5px;border-radius:5px;animation:4s forwards fadeOut}@keyframes fadeOut{from{opacity:1}to{opacity:0}}", o = document.createElement("style");
     o.textContent = e, document.head.appendChild(o);
-  }, r = (() => {
+  }, i = (() => {
     const e = document.createElement("div");
     return e.id = "toast-container", document.body.appendChild(e), w(), e;
-  })(), i = (e, o, t = !1) => {
+  })(), r = (e, o, t = !1) => {
     const n = document.createElement("div");
-    n.className = "toast", n.textContent = (t ? "🪬隐私防护 " : "🫥外部请求 ") + o + " " + e.replace(/^https?:\/\//, ""), r.appendChild(n), setTimeout(() => {
-      r.removeChild(n);
+    n.className = "toast", n.textContent = (t ? "🪬隐私防护 " : "🫥 ") + (o || "") + " " + e.replace(/^https?:\/\//, ""), i.appendChild(n), setTimeout(() => {
+      i.removeChild(n);
     }, 4e3);
   }, d = (e) => f.some((o) => e.includes(o)), s = (e, o, t = "normal") => {
-    t === "external" ? i(o, e) : t === "intercepted" && i(o, e, !0), console.log(t, e, o);
+    t === "external" ? r(o, e) : t === "intercepted" && r(o, e, !0), console.log(t, e, o);
   }, g = (e) => (e && console.log("SpyRBody:", e), new Response(JSON.stringify({ m: ":)" }), {
     status: 200,
     headers: { "Content-Type": "application/json" }
@@ -32,5 +32,5 @@
       h ? s(o, t, "external") : s(o, t), super.open(o, t, n, l, a);
     }
   }
-  window.XMLHttpRequest = x;
+  window.XMLHttpRequest = x, r("隐私防御已启动");
 })();
